@@ -56,7 +56,9 @@ public class PortletResourceHandler extends ResourceHandlerWrapper {
 
     public static final String MIME_PARAM = "type";
 
-    private final ResourceHandler parent;
+	private static final String ORG_RICHFACES_RESOURCE = "org.richfaces.resource";
+
+	private final ResourceHandler parent;
 
     public PortletResourceHandler(ResourceHandler parent) {
         this.parent = parent;
@@ -86,9 +88,26 @@ public class PortletResourceHandler extends ResourceHandlerWrapper {
     }
 
     @Override
+    public Resource createResource(String resourceName) {
+        Resource resource = getWrapped().createResource(resourceName);
+
+		if ((resource != null) && resource.getClass().getName().startsWith(ORG_RICHFACES_RESOURCE)) {
+			resource = new RichFacesResourceHandler(resource);
+		}
+		else if (!isPortletResource(resource)) {
+            resource = new PortletResource(resource);
+        }
+        return resource;
+    }
+
+    @Override
     public Resource createResource(String resourceName, String libraryName) {
         Resource resource = getWrapped().createResource(resourceName, libraryName);
-        if (!isPortletResource(resource)) {
+
+		if ((resource != null) && resource.getClass().getName().startsWith(ORG_RICHFACES_RESOURCE)) {
+			resource = new RichFacesResourceHandler(resource);
+		}
+		else if (!isPortletResource(resource)) {
             resource = new PortletResource(resource);
         }
         return resource;
@@ -97,7 +116,11 @@ public class PortletResourceHandler extends ResourceHandlerWrapper {
     @Override
     public Resource createResource(String resourceName, String libraryName, String contentType) {
         Resource resource = getWrapped().createResource(resourceName, libraryName, contentType);
-        if (!isPortletResource(resource)) {
+
+		if ((resource != null) && resource.getClass().getName().startsWith(ORG_RICHFACES_RESOURCE)) {
+			resource = new RichFacesResourceHandler(resource);
+		}
+		else if (!isPortletResource(resource)) {
             resource = new PortletResource(resource);
         }
         return resource;
