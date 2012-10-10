@@ -153,8 +153,16 @@ public class PortletBridgeImpl implements Bridge {
         }
         bridgeConfig.setFacesSuffixes(Arrays.asList(suffixString.split(" ")));
 
-        // Process web.xml content
-        WebXmlProcessor webXmlProc = new WebXmlProcessor(portletConfig.getPortletContext());
+        WebXmlProcessor webXmlProc = null;
+        if (portletContext.getResourceAsStream(WebXmlProcessor.WEB_XML_PATH) != null) {
+            // Process web.xml content
+            webXmlProc = new WebXmlProcessor(portletConfig.getPortletContext());
+        }
+        else {
+            // read from PBR default web.xml
+            logger.warning("The web.xml deployment descriptor was not found in portlet WAR, using default");
+            webXmlProc = new WebXmlProcessor(getClass().getClassLoader().getResourceAsStream(WebXmlProcessor.WEB_XML_PATH));
+        }
         // Retrieve Faces Servlet Mapping
         bridgeConfig.setFacesServletMappings(webXmlProc.getFacesServlet().getMappings());
         // Retrieve Error Page Mapping

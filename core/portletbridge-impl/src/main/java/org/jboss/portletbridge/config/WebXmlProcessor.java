@@ -51,7 +51,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public final class WebXmlProcessor {
 
-    private static final String WEB_XML_PATH = "/WEB-INF/web.xml";
+    public static final String WEB_XML_PATH = "/WEB-INF/web.xml";
 
     private static SAXParserFactory saxFactory = SAXParserFactory.newInstance();
     private static AtomicBoolean scan = new AtomicBoolean(true);
